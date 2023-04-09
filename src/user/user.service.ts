@@ -25,14 +25,19 @@ export class UserService {
     if (exsitingEmail) {
       throw new HttpException('邮箱已经被占用', 400);
     }
-    new this.userModel(createUserDto).save();
-    return {
-      message: '用户注册成功',
-      userData: {
-        ...createUserDto,
-        password: '保密',
-      },
-    };
+    // new this.userModel(createUserDto).save();
+    const userData = await this.userModel.create(createUserDto);
+    if (userData) {
+      return {
+        message: '用户注册成功',
+        userData: {
+          ...createUserDto,
+          password: '保密',
+        },
+      };
+    } else {
+      throw new HttpException('用户注册失败', 500);
+    }
   }
 
   async login(loginUserDto: LoginUserDto) {
